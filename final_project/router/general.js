@@ -5,6 +5,10 @@ let users = require("./auth_users.js").users;
 const public_users = express.Router();
 const jsonSpaces = 4;
 
+const stripSpaces = (string) => {
+  return string.replaceAll(" ", "").replaceAll("+", "");
+}
+
 
 public_users.post("/register", (req,res) => {
   //Write your code here
@@ -32,13 +36,13 @@ public_users.get('/author/:author',function (req, res) {
   //Write your code here
 
   // lowercase comparison
-  const author = req.params.author.toLowerCase();
+  const author = stripSpaces(req.params.author.toLowerCase());
   let result = [];
 
   console.log('Querying Author: ' + author);
   for (const book in books) {
     // Lowercase comparison
-    if (books[book].author.toLowerCase() == author) {
+    if (stripSpaces(books[book].author.toLowerCase()) == author) {
       result.push(JSON.stringify(books[book]));
     }
   }
@@ -51,13 +55,13 @@ public_users.get('/title/:title',function (req, res) {
   //Write your code here
 
   // lowercase comparison
-  const title = req.params.title.toLowerCase();
+  const title = stripSpaces(req.params.title.toLowerCase());
   let result = [];
 
   console.log('Querying Title: ' + title);
   for (const book in books) {
     // Lowercase comparison
-    if (books[book].title.toLowerCase() == title) {
+    if (stripSpaces(books[book].title.toLowerCase()) == title) {
       result.push(JSON.stringify(books[book]));
     }
   }

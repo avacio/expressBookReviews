@@ -87,6 +87,29 @@ regd_users.put("/auth/review/:isbn", (req, res) => {
   }
 });
 
+// DELETE request: Delete a revuew by isbn
+regd_users.delete("/auth/review/:isbn", (req, res) => {
+  // Update the code here
+  const isbn = req.params.isbn;
+
+  if (isbn && books[isbn]) {  // Check if isbn exists
+    const username = req.session.authorization.username;
+
+    if (books[isbn].reviews[username]) {
+      delete books[isbn].reviews[username];
+      // Send response confirming deletion of review
+      res.send(`Review for ISBN:${isbn} deleted.`);
+    }
+    else {
+      res.send(`No review for ISBN:${isbn} under ${username}.`);
+    }
+  }
+  else {
+    // Respond if friend with specified ISBN is not found
+    res.send("Unable to find book with ISBN.");
+  }
+});
+
 module.exports.authenticated = regd_users;
 module.exports.isValid = isValid;
 module.exports.users = users;

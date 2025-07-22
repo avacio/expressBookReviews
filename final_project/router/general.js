@@ -72,44 +72,59 @@ public_users.get('/isbn/:isbn',function (req, res) {
   isbnPromise.then(result => res.send(result),
     error => res.status(error.status).json({ message: error.message })
   );
- });
-  
-// Get book details based on author
-public_users.get('/author/:author',function (req, res) {
-  //Write your code here
-
-  // lowercase comparison
-  const author = stripSpaces(req.params.author.toLowerCase());
-  let result = [];
-
-  console.log('Querying Author: ' + author);
-  for (const book in books) {
-    // Lowercase comparison
-    if (stripSpaces(books[book].author.toLowerCase()) == author) {
-      result.push(JSON.stringify(books[book]));
-    }
-  }
-
-  return res.send(JSON.stringify(result, null, jsonSpaces));
 });
 
+function getBooksByAuthor(author) {
+  return new Promise((resolve) => {
+    let result = [];
+
+    console.log('Querying Author: ' + author);
+    for (const book in books) {
+      // Lowercase comparison
+      if (stripSpaces(books[book].author.toLowerCase()) == author) {
+        result.push(JSON.stringify(books[book]));
+      }
+    }
+    resolve(result);
+  });
+}
+
+// Get book details based on author
+public_users.get('/author/:author', function (req, res) {
+  //Write your code here
+  const author = stripSpaces(req.params.author.toLowerCase());
+
+  console.log("Querying author: " + author);
+  getBooksByAuthor(author).then(
+    result => res.send(JSON.stringify(result, null, jsonSpaces)),
+    error => res.status(error.status).json({ message: error.message })
+  );
+});
+
+function getBooksByTitle(title) {
+  return new Promise((resolve) => {
+    let result = [];
+
+    for (const book in books) {
+      // Lowercase comparison
+      if (stripSpaces(books[book].title.toLowerCase()) == title) {
+        result.push(JSON.stringify(books[book]));
+      }
+    }
+    resolve(result);
+  });
+}
+
 // Get all books based on title
-public_users.get('/title/:title',function (req, res) {
+public_users.get('/title/:title', function (req, res) {
   //Write your code here
 
   // lowercase comparison
   const title = stripSpaces(req.params.title.toLowerCase());
-  let result = [];
-
-  console.log('Querying Title: ' + title);
-  for (const book in books) {
-    // Lowercase comparison
-    if (stripSpaces(books[book].title.toLowerCase()) == title) {
-      result.push(JSON.stringify(books[book]));
-    }
-  }
-
-  return res.send(JSON.stringify(result, null, jsonSpaces));
+  getBooksByTitle(title).then(
+    result => res.send(JSON.stringify(result, null, jsonSpaces)),
+    error => res.status(error.status).json({ message: error.message })
+  );
 });
 
 //  Get book review
